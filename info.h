@@ -1,66 +1,38 @@
 #pragma once
-#include <Arduino.h>
-#include "screen.h"
 #include "serial.h"
+#include "screen.h"
 
-#define INFO_NUM_LINES 7
-#define INFO_LINE_HEIGHT 9
+#ifdef SERIAL_INFO
+#   if SERIAL_MAX_LINES > OLED_MAX_LINES
+#       define INFO_MAX_LINES SERIAL_MAX_LINES
+#   else
+#       define INFO_MAX_LINES OLED_MAX_LINES
+#   endif
+#else
+#   define INFO_MAX_LINES OLED_MAX_LINES
+#endif
+
 
 namespace info {
 
-using screen::Screen;
+void setup() {
+    serial::setup();
+    screen::setup();
+}
 
+template<typename T> void line(T text, uint8_t lineno) {
+    screen::set_line(text, lineno);
+    serial::set_line(text, lineno);
+}
 
-class Info : public Screen {
-public:
+template<typename T> void lines(T lines[], int n) {
+    screen::set_lines(lines, n);
+    serial::set_lines(lines, n);
+}
 
-    void setup() {
-        if(_setup) return;
-        serial::setup();
-        Screen::setup();
-        info("Ready");
-        _setup = true;
-    }
+void loop() {
+    screen::loop();
+    serial::loop();
+}
 
-    void loop() {
-        loop_serial();
-        loop_oled();
-    }
-
-    void loop_serial() {
-        unsigned long t = millis();
-        if(t - t_serial < 2000) return;
-        for(uint8_t i = 0; i < INFO_NUM_LINES; i++) {
-            serial::line(lines[i]);
-        }
-        t_serial = t;
-    }
-
-    void loop_oled() {
-        display.clearDisplay();
-        for(uint8_t i = 0; i < INFO_NUM_LINES; i++) {
-            display.setCursor(0, i * INFO_LINE_HEIGHT);
-            display.print(lines[i]);
-        }
-        display.display();
-    }
-    
-    template <typename T> void info(T text) { lines[INFO_NUM_LINES-1] = text; }
-    template <typename T> void line(T text, uint8_t lineno = 0) { lines[lineno] = text; }
-
-private:
-    Screen screen;
-    String lines[INFO_NUM_LINES];
-    unsigned long t_serial = 0;
-};
-
-
-Info info;
-
-
-void line(String text, uint8_t lineno = 0) { info.line(text, lineno); }
-void setup() { info.setup(); }
-void loop() { info.loop(); }
-
-
-}  // namespace info
+}

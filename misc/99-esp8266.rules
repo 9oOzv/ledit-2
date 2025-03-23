@@ -1,0 +1,2 @@
+SUBSYSTEMS=="usb", DRIVERS=="usb", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523", ENV{DEVICE_TYPE}="esp8266"
+ENV{DEVICE_TYPE}=="esp8266", KERNEL=="ttyUSB[0-9]*", SUBSYSTEM=="tty", SYMLINK+="esp8266", GROUP="developer"

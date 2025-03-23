@@ -5,7 +5,7 @@
 template<typename T> void fatal(T text) {
     serial::setup();
     for(;;) {
-        serial::line(text);
+        serial::println(text);
         delay(1000);
     }
 }

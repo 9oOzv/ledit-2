@@ -1,0 +1,6 @@
+export PORT="${PORT-/dev/esp8266}"
+export FQBN="${FQBN-esp8266:esp8266:nodemcuv2}"
+export DEBUG="${DEBUG-}"
+export SERIAL_INFO="${SERIAL_INFO-}"
+export OLED_INFO="${OLED_INFO-1}"
+export SKETCH="$(dirname "${BASH_SOURCE[0]}"/)/.."
