@@ -2,6 +2,7 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 #include "info.h"
+#include "common.h"
 
 #define WIFI_CONNECT_TIMEOUT_MS 60000
 #define WIFI_CONNECT_CHECK_INTERVAL_MS 500
@@ -20,34 +21,55 @@ namespace wifi {
 WiFiUDP udp;
 
 void setup() {
-    info::status("configuring wifi");
+    info::status("configuring wifi", true);
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-    info::status("connecting wifi");
+    info::debug(
+        "ssid: "
+        + String(WIFI_SSID)
+        + " password: "
+        + String(WIFI_PASSWORD)
+    );
     for(uint8_t i = 0; i < WIFI_CONNECT_NUM_CHECKS; i++) {
-        info::status2(String(i) + " / " + WIFI_CONNECT_NUM_CHECKS);
+        info::status(
+            (
+                String("connecting wifi ")
+                + String(i)
+                + String("/")
+                + String(WIFI_CONNECT_NUM_CHECKS)
+            ),
+            true
+        );
         if(WiFi.status() == WL_CONNECTED) break;
         delay(WIFI_CONNECT_CHECK_INTERVAL_MS);
     }
     if(WiFi.status() != WL_CONNECTED) {
-        info::status("wifi connection failed");
+        info::status("wifi connection failed", true);
         return;
     }
-    info::status("wifi connected");
-    info::status2(String("ip address:") + WiFi.localIP().toString());
-    info::status("listening");
-    info::status2(String("port:") + WIFI_UDP_PORT);
+    info::status("wifi connected", true);
     udp.begin(WIFI_UDP_PORT);
+    info::message(
+        (
+            String("listening: ")
+            + WiFi.localIP().toString()
+            + String(":")
+            + WIFI_UDP_PORT
+        ),
+        MAX_UNSIGNED_LONG
+    );
 }
 
-template<size_t N>
+template<int N>
 void read_package(char (&packet)[N]) {
     int packetSize = udp.parsePacket();
     if(packetSize) {
         udp.read(packet, max(N, packetSize));
         udp.flush();
-        info::status(String("received packet"));
-        info::status2(String(packet));
+        info::debug(String("received packet: ") + packet);
         return;
     }
     packet[0] = '\0';
 }
+
+
+}  // namespace wifi

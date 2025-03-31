@@ -7,6 +7,8 @@ build_flags=(
     ${DEBUG:+-DDEBUG}
     ${SERIAL_INFO:+-DSERIAL_INFO}
     ${OLED_INFO:+-DOLED_INFO}
+    ${WIFI_SSID:+-DWIFI_SSID=\"$WIFI_SSID\"}
+    ${WIFI_PASSWORD:+-DWIFI_PASSWORD=\"$WIFI_PASSWORD\"}
 )
 
 set -x

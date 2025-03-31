@@ -5,10 +5,18 @@
 #include <Adafruit_NeoPixel.h>
 #include "info.h"
 #include "wifi.h"
+#include "effects/static.h"
+#include "common.h"
 
 Adafruit_NeoPixel pixels(40, 5, NEO_RGB + NEO_KHZ800);
 Adafruit_NeoPixel pixels2(40, 4, NEO_RGB + NEO_KHZ800);
 uint16_t i = 0;
+effect::Static a(0x00FF00);
+effect::Static b(0xFF0000);
+effect::Static c(0x0000FF);
+effect::Effect *effects[] = { &a, &b, &c };
+uint8_t i_current_effect = 0;
+uint32_t colors[40];
 
 void setup() {
     info::setup();
@@ -17,17 +25,50 @@ void setup() {
     pixels2.begin();
 }
 
+template<uint16_t N>
+inline void setPixels(Adafruit_NeoPixel &pixels, uint32_t (&colors)[N]) {
+    pixels.clear();
+    for(uint16_t i = 0; i < N; i++) {
+        pixels.setPixelColor(i, colors[i]);
+    }
+    pixels.show();
+}
+
+void choose_effect(uint16_t i) {
+    i = i % arrsize(effects);
+    info::debug(String("choose effect: ") + i);
+    i_current_effect = i;
+}
+
+void loop_wifi() {
+    char data[33];
+    wifi::read_package(data);
+    // First byte in data is the effect
+    // Next 20 bytes are 10 uint16_t parameters for the effect
+    uint8_t effect = static_cast<uint8_t>(data[0]);
+    uint16_t params[16];
+    memcpy(params, data+1, 32);
+    if(effect == 0)
+        return;
+    info::debug(
+        String("remote command: ")
+        + effect
+        + " " + join(params, ",", HEX)
+    );
+    choose_effect(effect-1);
+    effect::Effect &eff = *effects[i_current_effect];
+    eff.set_parameters(params);
+}
 
 void loop() {
+    loop_wifi();
+    effect::Effect &eff = *effects[i_current_effect];
+    eff.apply(colors, colors);
+    i = (i + 1) % 40;
+    setPixels(pixels, colors);
+    setPixels(pixels2, colors);
     info::line(String("millis: ") + millis(), 0);
     info::line(String("micros: ") + micros(), 1);
     info::line(String("random: ") + random(0, 100), 2);
     info::loop();
-    i = (i + 1) % 40;
-    pixels.clear();
-    pixels.setPixelColor(i, pixels.Color(255, 0, 255));
-    pixels.show();
-    pixels2.clear();
-    pixels2.setPixelColor(i, pixels.Color(0, 255, 0));
-    pixels2.show();
 }
