@@ -12,8 +12,8 @@ public:
         if(i > 2)
             return;
         color =
-            (color & ~(0xFF << (i * 8)))
-            | (val >> 8 << (i * 8));
+            (color & ~(0xFF0000 >> (i * 8)))
+            | (val >> 8 << 16 >> (i * 8));
 
     }
 protected:
