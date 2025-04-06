@@ -6,6 +6,7 @@
 #include "info.h"
 #include "wifi.h"
 #include "effects/static.h"
+#include "effects/rainbow.h"
 #include "common.h"
 
 Adafruit_NeoPixel pixels1(40, 5, NEO_RGB + NEO_KHZ800);
@@ -13,10 +14,13 @@ Adafruit_NeoPixel pixels2(40, 4, NEO_RGB + NEO_KHZ800);
 Adafruit_NeoPixel pixels3(40, 0, NEO_RGB + NEO_KHZ800);
 Adafruit_NeoPixel pixels4(40, 2, NEO_RGB + NEO_KHZ800);
 uint16_t i = 0;
-effect::Static a(0x00FF00);
-effect::Static b(0xFF0000);
-effect::Static c(0x0000FF);
-effect::Effect *effects[] = { &a, &b, &c };
+effect::Rainbow rainbow_effect(1);
+effect::Static static_effect(0xFFFFFF);
+
+effect::Effect *effects[] = {
+    &rainbow_effect,
+    &static_effect,
+};
 uint8_t i_current_effect = 0;
 uint32_t colors[40];
 
