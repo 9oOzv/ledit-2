@@ -8,8 +8,10 @@
 #include "effects/static.h"
 #include "common.h"
 
-Adafruit_NeoPixel pixels(40, 5, NEO_RGB + NEO_KHZ800);
+Adafruit_NeoPixel pixels1(40, 5, NEO_RGB + NEO_KHZ800);
 Adafruit_NeoPixel pixels2(40, 4, NEO_RGB + NEO_KHZ800);
+Adafruit_NeoPixel pixels3(40, 0, NEO_RGB + NEO_KHZ800);
+Adafruit_NeoPixel pixels4(40, 2, NEO_RGB + NEO_KHZ800);
 uint16_t i = 0;
 effect::Static a(0x00FF00);
 effect::Static b(0xFF0000);
@@ -21,8 +23,10 @@ uint32_t colors[40];
 void setup() {
     info::setup();
     wifi::setup();
-    pixels.begin();
+    pixels1.begin();
     pixels2.begin();
+    pixels3.begin();
+    pixels4.begin();
 }
 
 template<uint16_t N>
@@ -65,8 +69,10 @@ void loop() {
     effect::Effect &eff = *effects[i_current_effect];
     eff.apply(colors, colors);
     i = (i + 1) % 40;
-    setPixels(pixels, colors);
+    setPixels(pixels1, colors);
     setPixels(pixels2, colors);
+    setPixels(pixels3, colors);
+    setPixels(pixels4, colors);
     info::line(String("millis: ") + millis(), 0);
     info::line(String("micros: ") + micros(), 1);
     info::line(String("random: ") + random(0, 100), 2);
