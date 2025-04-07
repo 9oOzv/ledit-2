@@ -14,8 +14,8 @@ Adafruit_NeoPixel pixels2(40, 4, NEO_RGB + NEO_KHZ800);
 Adafruit_NeoPixel pixels3(40, 0, NEO_RGB + NEO_KHZ800);
 Adafruit_NeoPixel pixels4(40, 2, NEO_RGB + NEO_KHZ800);
 uint16_t i = 0;
-effect::Rainbow rainbow_effect(1);
-effect::Static static_effect(0xFFFFFF);
+effect::Rainbow rainbow_effect;
+effect::Static static_effect;
 
 effect::Effect *effects[] = {
     &rainbow_effect,

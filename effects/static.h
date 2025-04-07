@@ -6,8 +6,7 @@ namespace effect {
 
 class Static : public Effect {
 public:
-    Static() {}
-    Static(uint32_t color) : color(color) {}
+    Static(uint32_t color = 0xFFFFFF) : color(color) {}
     void set_parameter(uint8_t i, uint16_t val) {
         if(i > 2)
             return;
